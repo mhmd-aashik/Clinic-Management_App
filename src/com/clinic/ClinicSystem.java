@@ -97,14 +97,14 @@ class ClinicSystem {
         Dermatologist selectedDoctor = dermatologists.get(doctorChoice - 1);
 
         // Enter Date and Time
-        System.out.print(MessageFormatter.prompt("Enter Date (YYYY-MM-DD): "));
+        System.out.print(MessageFormatter.prompt("Enter Appointment Date (YYYY-MM-DD) for example 2024-12-01: "));
         String date = scanner.nextLine();
         if (!InputValidator.isValidFutureDate(date)) {
             System.out.println(MessageFormatter.error("Invalid date. Please enter a date today or in the future."));
             return;
         }
 
-        System.out.print(MessageFormatter.prompt("Enter Time (HH:MM): "));
+        System.out.print(MessageFormatter.prompt("Enter Time (HH:MM) for example 08:12 : "));
         String time = scanner.nextLine();
         if (!InputValidator.isValidTime(time)) {
             System.out.println(MessageFormatter.error("Invalid time format. Appointment not booked."));
