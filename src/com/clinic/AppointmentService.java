@@ -55,10 +55,10 @@ class AppointmentService {
             return;
         }
 
-        System.out.print(MessageFormatter.prompt("Enter new Date (YYYY-MM-DD): "));
+        System.out.print(MessageFormatter.prompt("Enter new Date (YYYY-MM-DD) for example 2024-12-01: "));
         String newDate = scanner.nextLine();
 
-        System.out.print(MessageFormatter.prompt("Enter new Time (HH:MM): "));
+        System.out.print(MessageFormatter.prompt("Enter new Time (HH:MM) for example 08:00 : "));
         String newTime = scanner.nextLine();
 
         appointment.setDate(newDate);

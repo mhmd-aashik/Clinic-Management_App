@@ -104,7 +104,7 @@ class ClinicSystem {
             return;
         }
 
-        System.out.print(MessageFormatter.prompt("Enter Time (HH:MM) for example 08:12 : "));
+        System.out.print(MessageFormatter.prompt("Enter Time (HH:MM) for example 08:00 : "));
         String time = scanner.nextLine();
         if (!InputValidator.isValidTime(time)) {
             System.out.println(MessageFormatter.error("Invalid time format. Appointment not booked."));
