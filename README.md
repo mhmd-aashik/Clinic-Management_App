@@ -16,16 +16,8 @@
 ![search-Appointment](./src/assets/search.png)
 
 
-# View Appointments
-![create-Appointment](./src/assets/view.png)
-
-
 # Update Appointments
 ![update-Appointment](./src/assets/update.png)
-
-
-# View Appointments
-![view-Appointment](./src/assets/view.png)
 
 
 # Invoice Appointments
