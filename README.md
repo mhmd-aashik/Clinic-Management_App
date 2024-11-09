@@ -1,27 +1,37 @@
 # Class Diagram
 
-![Class-Diagram](./src/assets/class-diagram.png)
+![Class-Diagram](./src/assets/githubImage.png)
 
 
-# Book Appointments
-![create-Appointment](./src/assets/booking.png)
-![app-recipt](./src/assets/appo-recipt.png)
+[//]: # (# Book Appointments)
 
+[//]: # (![create-Appointment]&#40;./src/assets/booking.png&#41;)
 
-# View Appointments
-![view-Appointment](./src/assets/view.png)
+[//]: # (![app-recipt]&#40;./src/assets/appo-recipt.png&#41;)
 
+[//]: # ()
+[//]: # ()
+[//]: # (# View Appointments)
 
-# Search Appointments
-![search-Appointment](./src/assets/search.png)
+[//]: # (![view-Appointment]&#40;./src/assets/view.png&#41;)
 
+[//]: # ()
+[//]: # ()
+[//]: # (# Search Appointments)
 
-# Update Appointments
-![update-Appointment](./src/assets/update.png)
+[//]: # (![search-Appointment]&#40;./src/assets/search.png&#41;)
 
+[//]: # ()
+[//]: # ()
+[//]: # (# Update Appointments)
 
-# Invoice Appointments
-![create-Appointment](./src/assets/invoice.png)
+[//]: # (![update-Appointment]&#40;./src/assets/update.png&#41;)
+
+[//]: # ()
+[//]: # ()
+[//]: # (# Invoice Appointments)
+
+[//]: # (![create-Appointment]&#40;./src/assets/invoice.png&#41;)
 
 
 # Esoft Id - E222318
