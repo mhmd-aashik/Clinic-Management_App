@@ -1,6 +1,6 @@
 # Class Diagram
 
-![Class-Diagram](./src/assets/githubImage.png)
+![Class-Diagram](./src/assets/gitclass.png)
 
 
 [//]: # (# Book Appointments)
