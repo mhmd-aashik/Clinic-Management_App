@@ -23,16 +23,19 @@ class InvoiceService {
             System.out.println((i + 1) + ". " + treatmentTypes[i].name() + " (LKR " + treatmentTypes[i].getPrice() + ")");
         }
 
-        int treatmentChoice = Integer.parseInt(scanner.nextLine()) - 1;
-        if (treatmentChoice < 0 || treatmentChoice >= treatmentTypes.length) {
-            System.out.println(MessageFormatter.error("Invalid choice."));
-            return;
-        }
+        try {
+            int treatmentChoice = Integer.parseInt(scanner.nextLine()) - 1;
+            if (treatmentChoice < 0 || treatmentChoice >= treatmentTypes.length) {
+                System.out.println(MessageFormatter.error("Invalid choice."));
+                return;
+            }
 
-        TreatmentType treatmentType = treatmentTypes[treatmentChoice];
-        Invoice invoice = new Invoice(appointment, treatmentType);
-        appointment.markAsPaid();
-        System.out.println(invoice);
+            TreatmentType treatmentType = treatmentTypes[treatmentChoice];
+            Invoice invoice = new Invoice(appointment, treatmentType);
+            appointment.markAsPaid();
+            System.out.println(invoice);
+        } catch (NumberFormatException e) {
+            System.out.println(MessageFormatter.error("Invalid choice."));
+        }
     }
 }
-

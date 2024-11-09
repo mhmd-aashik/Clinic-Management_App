@@ -7,12 +7,6 @@ enum TreatmentType {
     LASER_TREATMENT(12500.00);
 
     private final double price;
-
-    TreatmentType(double price) {
-        this.price = price;
-    }
-
-    public double getPrice() {
-        return price;
-    }
+    TreatmentType(double price) { this.price = price; }
+    public double getPrice() { return price; }
 }

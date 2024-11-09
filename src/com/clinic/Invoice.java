@@ -1,10 +1,10 @@
 package com.clinic;
 
 class Invoice {
-    private Appointment appointment;
-    private TreatmentType treatmentType;
-    private double registrationFee = 500.00;
-    private double taxRate = 0.025;
+    private final Appointment appointment;
+    private final TreatmentType treatmentType;
+    private final double registrationFee = 500.00;
+    private final double taxRate = 0.025;
 
     public Invoice(Appointment appointment, TreatmentType treatmentType) {
         this.appointment = appointment;
@@ -44,4 +44,3 @@ class Invoice {
         );
     }
 }
-

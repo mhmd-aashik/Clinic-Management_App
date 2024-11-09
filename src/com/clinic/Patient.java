@@ -1,10 +1,10 @@
 package com.clinic;
 
 class Patient {
-    private String nic;
-    private String name;
-    private String email;
-    private String phone;
+    private final String nic;
+    private final String name;
+    private final String email;
+    private final String phone;
 
     public Patient(String nic, String name, String email, String phone) {
         this.nic = nic;
@@ -13,9 +13,10 @@ class Patient {
         this.phone = phone;
     }
 
-    public String getNic() { return nic; }
     public String getName() { return name; }
+    public String getNic() { return nic; }
     public String getEmail() { return email; }
     public String getPhone() { return phone; }
 }
+
 

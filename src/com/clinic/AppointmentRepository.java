@@ -28,4 +28,3 @@ class AppointmentRepository {
         return result;
     }
 }
-

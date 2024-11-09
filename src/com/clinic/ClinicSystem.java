@@ -1,7 +1,12 @@
 package com.clinic;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
 
 class ClinicSystem {
     private final AppointmentService appointmentService;
@@ -37,7 +42,10 @@ class ClinicSystem {
                 case 3 -> searchAppointment();
                 case 4 -> updateAppointment();
                 case 5 -> generateInvoice();
-                case 6 -> System.exit(0);
+                case 6 -> {
+                    System.out.println("Exiting system. Goodbye!");
+                    System.exit(0);
+                }
                 default -> System.out.println(MessageFormatter.error("Invalid choice. Please try again."));
             }
         } catch (NumberFormatException e) {
@@ -46,72 +54,42 @@ class ClinicSystem {
     }
 
     private void bookAppointment() {
-        System.out.print(MessageFormatter.prompt("Enter NIC (minimum 9 characters): "));
-        String nic = scanner.nextLine();
-        if (!InputValidator.isValidNic(nic)) {
-            System.out.println(MessageFormatter.error("NIC should be at least 9 characters."));
-            return;
-        }
-
-        System.out.print(MessageFormatter.prompt("Enter Name (minimum 4 characters): "));
-        String name = scanner.nextLine();
-        if (!InputValidator.isValidName(name)) {
-            System.out.println(MessageFormatter.error("The Name should be at least 4 characters long."));
-            return;
-        }
-
-        System.out.print(MessageFormatter.prompt("Enter Email Address: "));
-        String email = scanner.nextLine();
-        if (!InputValidator.isValidEmail(email)) {
-            System.out.println(MessageFormatter.error("Invalid email address. Please enter a valid format."));
-            return;
-        }
-
-        System.out.print(MessageFormatter.prompt("Enter Phone Number (10 digits): "));
-        String phone = scanner.nextLine();
-        if (!InputValidator.isValidPhone(phone)) {
-            System.out.println(MessageFormatter.error("Invalid phone number. It should be exactly 10 digits."));
-            return;
-        }
+        String nic = promptInput("Enter NIC (minimum 9 characters): ", InputValidator::isValidNic);
+        String name = promptInput("Enter Name (minimum 4 characters): ", InputValidator::isValidName);
+        String email = promptInput("Enter Email Address: ", InputValidator::isValidEmail);
+        String phone = promptInput("Enter Phone Number (10 digits): ", InputValidator::isValidPhone);
 
         Patient patient = new Patient(nic, name, email, phone);
 
-        // Select Dermatologist
         List<Dermatologist> dermatologists = appointmentService.getDermatologists();
         System.out.println(MessageFormatter.info("Available Dermatologists:"));
         for (int i = 0; i < dermatologists.size(); i++) {
             System.out.println((i + 1) + ". " + dermatologists.get(i).getName() + " (Available: " + dermatologists.get(i).getSchedule() + ")");
         }
-        System.out.print(MessageFormatter.prompt("Select a dermatologist (enter number): "));
-        int doctorChoice;
-        try {
-            doctorChoice = Integer.parseInt(scanner.nextLine());
-            if (doctorChoice < 1 || doctorChoice > dermatologists.size()) {
-                System.out.println(MessageFormatter.error("Invalid choice. Appointment not booked."));
-                return;
-            }
-        } catch (NumberFormatException e) {
-            System.out.println(MessageFormatter.error("Invalid input. Appointment not booked."));
-            return;
-        }
-        Dermatologist selectedDoctor = dermatologists.get(doctorChoice - 1);
 
-        // Enter Date and Time
-        System.out.print(MessageFormatter.prompt("Enter Appointment Date (YYYY-MM-DD) for example 2024-12-01: "));
-        String date = scanner.nextLine();
-        if (!InputValidator.isValidFutureDate(date)) {
-            System.out.println(MessageFormatter.error("Invalid date. Please enter a date today or in the future."));
-            return;
+        int doctorChoice = promptNumericInput("Select a dermatologist (enter number): ", 1, dermatologists.size(), scanner) - 1;
+        Dermatologist selectedDoctor = dermatologists.get(doctorChoice);
+
+        List<LocalDate> availableDates = generateNextAvailableDates(selectedDoctor.getAvailableDays(), 5);
+        System.out.println(MessageFormatter.info("Available Dates:"));
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        for (int i = 0; i < availableDates.size(); i++) {
+            System.out.println((i + 1) + ". " + availableDates.get(i).format(dateFormatter));
         }
 
-        System.out.print(MessageFormatter.prompt("Enter Time (HH:MM) for example 08:00 : "));
-        String time = scanner.nextLine();
-        if (!InputValidator.isValidTime(time)) {
-            System.out.println(MessageFormatter.error("Invalid time format. Appointment not booked."));
-            return;
+        int dateChoice = promptNumericInput("Select an available date by entering the corresponding number: ", 1, availableDates.size(), scanner) - 1;
+        LocalDate appointmentDate = availableDates.get(dateChoice);
+
+        List<LocalTime> availableTimes = generateTimeSlots(selectedDoctor.getStartTime(), selectedDoctor.getEndTime(), 15);
+        System.out.println(MessageFormatter.info("Available Time Slots:"));
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        for (int i = 0; i < availableTimes.size(); i++) {
+            System.out.println((i + 1) + ". " + availableTimes.get(i).format(timeFormatter));
         }
 
-        // Confirm Registration Payment
+        int timeChoice = promptNumericInput("Select an available time slot by entering the corresponding number: ", 1, availableTimes.size(), scanner) - 1;
+        LocalTime appointmentTime = availableTimes.get(timeChoice);
+
         System.out.println(MessageFormatter.info("The registration fee is LKR 500.00. Do you confirm the payment? (yes/no)"));
         String confirmation = scanner.nextLine();
         if (!confirmation.equalsIgnoreCase("yes")) {
@@ -119,8 +97,58 @@ class ClinicSystem {
             return;
         }
 
-        Appointment appointment = new Appointment(patient, selectedDoctor, date, time);
+        Appointment appointment = new Appointment(patient, selectedDoctor, appointmentDate.format(dateFormatter), appointmentTime.format(timeFormatter));
         appointmentService.bookAppointment(appointment);
+    }
+
+    private String promptInput(String message, Validator validator) {
+        String input;
+        do {
+            System.out.print(MessageFormatter.prompt(message));
+            input = scanner.nextLine();
+        } while (!validator.validate(input));
+        return input;
+    }
+
+    private int promptNumericInput(String message, int min, int max, Scanner scanner) {
+        int input;
+        while (true) {
+            System.out.print(MessageFormatter.prompt(message));
+            try {
+                input = Integer.parseInt(scanner.nextLine());
+                if (input >= min && input <= max) break;
+            } catch (NumberFormatException ignored) {}
+            System.out.println(MessageFormatter.error("Invalid choice. Please try again."));
+        }
+        return input;
+    }
+
+    private List<LocalDate> generateNextAvailableDates(List<String> daysOfWeek, int numberOfDates) {
+        List<LocalDate> dates = new ArrayList<>();
+        LocalDate startDate = LocalDate.now();
+        int count = 0;
+
+        while (count < numberOfDates) {
+            for (String day : daysOfWeek) {
+                LocalDate nextDate = startDate.with(java.time.DayOfWeek.valueOf(day.toUpperCase()));
+                if (!nextDate.isBefore(startDate) && count < numberOfDates) {
+                    dates.add(nextDate);
+                    count++;
+                }
+            }
+            startDate = startDate.plusWeeks(1);
+        }
+        return dates;
+    }
+
+    private List<LocalTime> generateTimeSlots(LocalTime startTime, LocalTime endTime, int intervalMinutes) {
+        List<LocalTime> timeSlots = new ArrayList<>();
+        LocalTime time = startTime;
+        while (time.isBefore(endTime)) {
+            timeSlots.add(time);
+            time = time.plusMinutes(intervalMinutes);
+        }
+        return timeSlots;
     }
 
     private void viewAppointments() {
@@ -135,23 +163,13 @@ class ClinicSystem {
     }
 
     private void updateAppointment() {
-        System.out.print(MessageFormatter.prompt("Enter Appointment ID to update: "));
-        try {
-            int appointmentId = Integer.parseInt(scanner.nextLine());
-            appointmentService.updateAppointment(appointmentId, scanner);
-        } catch (NumberFormatException e) {
-            System.out.println(MessageFormatter.error("Please enter a valid numeric ID."));
-        }
+        int appointmentId = promptNumericInput("Enter Appointment ID to update: ", 1, Integer.MAX_VALUE, scanner);
+        appointmentService.updateAppointment(appointmentId, scanner);
     }
 
     private void generateInvoice() {
-        System.out.print(MessageFormatter.prompt("Enter Appointment ID to generate invoice: "));
-        try {
-            int appointmentId = Integer.parseInt(scanner.nextLine());
-            invoiceService.generateInvoice(appointmentId);
-        } catch (NumberFormatException e) {
-            System.out.println(MessageFormatter.error("Invalid ID. Please enter a numeric ID."));
-        }
+        int appointmentId = promptNumericInput("Enter Appointment ID to generate invoice: ", 1, Integer.MAX_VALUE, scanner);
+        invoiceService.generateInvoice(appointmentId);
     }
 }
 
